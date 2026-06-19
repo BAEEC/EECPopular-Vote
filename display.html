@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GRAND SHINING 2026 — จอแสดงผล</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#04040d; --space:#0a0a20; --nebula:#1b1147;
+    --gold:#F2D78B; --gold-2:#E4BC66; --gold-line:rgba(242,215,139,.26);
+    --cream:#F4ECD6; --muted:rgba(244,236,214,.6);
+    --display:'Cinzel',serif; --body:'Noto Sans Thai',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--body);color:var(--cream);height:100vh;overflow:hidden;
+    background:
+      radial-gradient(120% 55% at 50% -6%, rgba(242,215,139,.10), transparent 60%),
+      radial-gradient(70% 60% at 8% 20%, rgba(120,78,210,.30), transparent 55%),
+      radial-gradient(70% 60% at 94% 30%, rgba(70,52,165,.26), transparent 55%),
+      linear-gradient(180deg, var(--space) 0%, var(--nebula) 50%, var(--void) 100%);}
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .star{position:absolute;background:#fff;border-radius:50%;opacity:.6;animation:tw 3s ease-in-out infinite}
+  .star.g{background:var(--gold);box-shadow:0 0 6px var(--gold)}
+  @keyframes tw{0%,100%{opacity:.12;transform:scale(.6)}50%{opacity:1;transform:scale(1)}}
+
+  .wrap{position:relative;z-index:1;height:100vh;display:flex;flex-direction:column;padding:2.4vh 2vw}
+  .head{text-align:center;flex:0 0 auto}
+  .eyebrow{font-family:var(--display);font-size:1.5vh;letter-spacing:.5vw;color:var(--gold-2);opacity:.85}
+  .title{font-family:var(--display);font-weight:800;font-size:5.4vh;line-height:1;letter-spacing:.3vw;
+    background:linear-gradient(100deg,#9c7a26,#F7E6B0 25%,#fffaf0 42%,#F2D78B 60%,#9c7a26);
+    background-size:230% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 2px 12px rgba(242,215,139,.4));animation:shine 7s linear infinite}
+  @keyframes shine{to{background-position:230% 0}}
+  .tagline{font-family:var(--display);font-size:1.7vh;letter-spacing:.35vw;color:var(--gold-2);margin-top:.6vh}
+
+  .main{flex:1;display:flex;gap:2vw;min-height:0;margin-top:2vh}
+  .left{width:23%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.2vh;
+    border:1px solid var(--gold-line);border-radius:1.4vh;padding:2.5vh 1.5vw;
+    background:linear-gradient(180deg, rgba(30,22,62,.5), rgba(14,10,34,.5))}
+  .scan-h{font-family:var(--display);font-size:2.4vh;color:var(--gold);text-align:center}
+  .qrbox{background:#fff;padding:1.4vh;border-radius:1.2vh;border:.4vh solid var(--gold);box-shadow:0 0 4vh rgba(242,215,139,.3)}
+  .qrbox svg{display:block;width:15vw;max-width:22vh;height:auto}
+  .scan-sub{font-size:1.7vh;color:var(--cream);text-align:center;line-height:1.4}
+  .stat{text-align:center;margin-top:.5vh}
+  .stat .v{font-family:var(--display);font-size:3.4vh;color:var(--gold);line-height:1}
+  .stat .k{font-size:1.5vh;color:var(--muted)}
+  .live{display:inline-flex;align-items:center;gap:.6vh;font-size:1.5vh;color:var(--gold-2);margin-top:1vh}
+  .dot{width:1vh;height:1vh;border-radius:50%;background:var(--gold);box-shadow:0 0 1.2vh var(--gold);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(242,215,139,.5)}70%{box-shadow:0 0 0 1.4vh rgba(242,215,139,0)}100%{box-shadow:0 0 0 0 rgba(242,215,139,0)}}
+
+  .board{flex:1;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:1.1vh 1.4vw;min-height:0}
+  .row{display:grid;grid-template-columns:auto auto 1fr auto;gap:1.2vw;align-items:center;
+    padding:1vh 1.2vw;border-radius:1.2vh;border:1px solid var(--gold-line);
+    background:linear-gradient(180deg, rgba(30,22,62,.62), rgba(14,10,34,.62));overflow:hidden}
+  .row.r1{border-color:rgba(242,215,139,.65);box-shadow:0 0 3vh rgba(242,215,139,.22);
+    background:linear-gradient(180deg, rgba(64,48,16,.5), rgba(22,15,40,.72))}
+  .rk{position:relative;font-family:var(--display);font-weight:800;font-size:4vh;color:var(--gold);min-width:2.4vw;text-align:center;text-shadow:0 0 1.6vh rgba(242,215,139,.3)}
+  .row.r1 .rk{color:#FCEBB0}.row.r2 .rk{color:#E8ECF2}.row.r3 .rk{color:#F0C089}
+  .row.r1 .rk::before{content:'\265B';position:absolute;top:-1.8vh;left:50%;transform:translateX(-50%);font-size:1.8vh;color:var(--gold)}
+  .ph{height:8.6vh;width:6.4vh;object-fit:cover;border-radius:.8vh;border:1px solid var(--gold-line);background:#1a1330}
+  .who{min-width:0}
+  .who .nm{font-size:1.5vh;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .who .cd{font-size:3vh;font-weight:800;color:var(--cream);line-height:1.05}
+  .who .it{font-size:2vh;letter-spacing:.2vh;line-height:1.2;margin-top:.3vh;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sc{text-align:right}
+  .sc .n{font-family:var(--display);font-size:4.2vh;font-weight:700;color:var(--gold);line-height:1;transition:color .3s}
+  .sc .l{font-size:1.3vh;color:var(--muted)}
+  .bump{animation:bump .6s ease}
+  @keyframes bump{0%{color:#fffaf0;transform:scale(1)}40%{transform:scale(1.18);text-shadow:0 0 2vh var(--gold)}100%{transform:scale(1)}}
+
+  @media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="wrap">
+  <div class="head">
+    <div class="eyebrow">&#10022;  YOU ARE THE NEXT  &#10022;</div>
+    <div class="title">GRAND SHINING 2026</div>
+    <div class="tagline">PIM BUSINESS BEYOND STARS</div>
+  </div>
+  <div class="main">
+    <div class="left">
+      <div class="scan-h">สแกนเพื่อร่วมโหวต</div>
+      <div class="qrbox" id="voteqr"></div>
+      <div class="scan-sub">ส่งของขวัญจักรวาล<br>ให้ดาวที่คุณเชียร์ &#10024;</div>
+      <div class="stat"><div class="v" id="totalBaht">0</div><div class="k">ยอดบริจาครวม (บาท)</div></div>
+      <div class="live"><span class="dot"></span> อัปเดตสด</div>
+    </div>
+    <div class="board" id="board"></div>
+  </div>
+</div>
+
+<script>
+/* ===== ตั้งค่า ===== */
+const CONFIG = {
+  apiUrl: 'https://script.google.com/macros/s/AKfycbxMmM15OdA-KsPWIBU3L1nrPf21H2ltZ4Jo9sA93U10U19GLg-4cn7kSkTlqL3HTOhZ/exec',
+  voteUrl: 'https://baeec.github.io/EECPopular-Vote/',   // ลิงก์หน้าโหวต (สำหรับทำ QR)
+  bahtPerVote: 10,
+  refreshMs: 7000,
+  itemMeta: {10:{emoji:'⭐'},20:{emoji:'🌙'},30:{emoji:'🚀'},50:{emoji:'☄️'},100:{emoji:'🌌'}},
+  amounts:[10,20,30,50,100],
+};
+/* ผู้เข้าประกวด — ต้องตรงกับในหน้า index.html (โดยเฉพาะ id และชื่อ) */
+const CONTESTANTS = [
+  {id:'B1',name:'ชื่อ นามสกุล',hue:350},{id:'B2',name:'ชื่อ นามสกุล',hue:210},
+  {id:'B3',name:'ชื่อ นามสกุล',hue:40},{id:'B4',name:'ชื่อ นามสกุล',hue:160},
+  {id:'B5',name:'ชื่อ นามสกุล',hue:120},{id:'B6',name:'ชื่อ นามสกุล',hue:265},
+  {id:'B7',name:'ชื่อ นามสกุล',hue:200},{id:'B8',name:'ชื่อ นามสกุล',hue:330},
+  {id:'B9',name:'ชื่อ นามสกุล',hue:55},{id:'B10',name:'ชื่อ นามสกุล',hue:190},
+  {id:'B11',name:'ชื่อ นามสกุล',hue:25},{id:'B12',name:'ชื่อ นามสกุล',hue:300},
+];
+
+function avatar(c){
+  const h=c.hue||250;
+  const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='120' height='160' viewBox='0 0 120 160'>
+    <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='hsl(${h},65%,55%)'/><stop offset='1' stop-color='hsl(${(h+40)%360},70%,38%)'/></linearGradient></defs>
+    <rect width='120' height='160' fill='url(#g)'/><circle cx='60' cy='60' r='27' fill='rgba(255,255,255,.92)'/>
+    <path d='M24 152c0-25 16-40 36-40s36 15 36 40z' fill='rgba(255,255,255,.92)'/>
+    <text x='60' y='130' font-family='sans-serif' font-size='24' font-weight='800' fill='hsl(${h},60%,30%)' text-anchor='middle'>${c.id}</text></svg>`;
+  return 'data:image/svg+xml,'+encodeURIComponent(svg);
+}
+CONTESTANTS.forEach(c=>c.img=avatar(c));
+const CMAP={}; CONTESTANTS.forEach(c=>CMAP[c.id]=c);
+
+function buildStars(){
+  const sky=document.getElementById('stars');let h='';
+  for(let i=0;i<60;i++){const x=(Math.random()*100).toFixed(2),y=(Math.random()*100).toFixed(2),s=(Math.random()*2+1).toFixed(2),d=(Math.random()*3).toFixed(2),dur=(2+Math.random()*3).toFixed(2);const g=Math.random()<0.25?' g':'';h+=`<span class="star${g}" style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;animation-delay:${d}s;animation-duration:${dur}s"></span>`;}
+  sky.innerHTML=h;
+}
+function makeVoteQR(){
+  try{const qr=qrcode(0,'M');qr.addData(CONFIG.voteUrl);qr.make();
+    const box=document.getElementById('voteqr');box.innerHTML=qr.createSvgTag({cellSize:6,margin:1,scalable:true});
+    const svg=box.querySelector('svg');if(svg){svg.removeAttribute('width');svg.removeAttribute('height');}
+  }catch(e){}
+}
+function itemsToEmoji(counts){
+  counts=counts||{};const order=CONFIG.amounts.slice().sort((a,b)=>a-b);
+  let total=0;order.forEach(a=>total+=(counts[a]||0));
+  if(!total)return '';
+  const compact=total>16,parts=[];
+  order.forEach(a=>{const n=counts[a]||0;if(!n)return;const em=(CONFIG.itemMeta[a]||{}).emoji||'\u2022';parts.push((compact||n>8)?(em+'\u00d7'+n):em.repeat(n));});
+  return parts.join(compact?' ':'');
+}
+function itemsKey(o){return Object.keys(o||{}).sort((a,b)=>a-b).map(k=>k+'x'+o[k]).join(',');}
+
+let rowEls={},built=false,lastSig='',lastScores={},lastItems={};
+async function refresh(){
+  let data={scores:{},items:{},photos:{},totalBaht:0};
+  try{const r=await fetch(CONFIG.apiUrl+'?action=leaderboard');const d=await r.json();if(d&&d.ok)data=d;}catch(e){return;}
+  lastItems=data.items||{};
+  Object.keys(data.photos||{}).forEach(id=>{if(CMAP[id]&&data.photos[id])CMAP[id].img=data.photos[id];});
+  document.getElementById('totalBaht').textContent=(data.totalBaht||0).toLocaleString();
+  const sc={};CONTESTANTS.forEach(c=>sc[c.id]=(data.scores&&data.scores[c.id])||0);
+  const ranked=[...CONTESTANTS].sort((a,b)=>sc[b.id]-sc[a.id]);
+  const board=document.getElementById('board');
+  board.style.gridTemplateRows='repeat('+Math.ceil(ranked.length/2)+',1fr)';
+
+  if(!built){
+    board.innerHTML='';
+    ranked.forEach(c=>{
+      const d=document.createElement('div');d.className='row';
+      d.innerHTML=`<div class="rk"></div><img class="ph" src="${c.img}" alt="${c.id}">
+        <div class="who"><div class="nm">${c.name}</div><div class="cd">${c.id}</div><div class="it"></div></div>
+        <div class="sc"><div class="n"></div><div class="l">คะแนนโหวต</div></div>`;
+      board.appendChild(d);rowEls[c.id]=d;
+    });
+    built=true;
+  }
+  const sig=ranked.map(c=>c.id+':'+sc[c.id]+':'+itemsKey(lastItems[c.id])).join('|');
+  if(sig===lastSig)return; lastSig=sig;
+
+  ranked.forEach((c,i)=>{
+    const el=rowEls[c.id];if(!el)return;board.appendChild(el);
+    const rk=i+1;
+    el.className='row'+(rk<=3?' r'+rk:'');
+    el.querySelector('.rk').textContent=rk;
+    const ph=el.querySelector('.ph');if(ph.getAttribute('src')!==c.img)ph.setAttribute('src',c.img);
+    el.querySelector('.it').textContent=itemsToEmoji(lastItems[c.id]);
+    const nEl=el.querySelector('.sc .n');const v=sc[c.id];
+    if(lastScores[c.id]!==undefined&&v!==lastScores[c.id]){nEl.textContent=v;nEl.classList.remove('bump');void nEl.offsetWidth;nEl.classList.add('bump');}
+    else nEl.textContent=v;
+  });
+  lastScores=sc;
+}
+
+buildStars(); makeVoteQR(); refresh();
+setInterval(refresh, CONFIG.refreshMs);
+</script>
+</body>
+</html>
