@@ -172,6 +172,13 @@
   .lightbox{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.88);display:none;align-items:center;justify-content:center;padding:20px}
   .lightbox img{max-width:100%;max-height:90vh;border-radius:8px}
 
+  .item-amt{align-items:center;gap:12px;padding:14px 16px}
+  .item-amt .it-em{font-size:30px;line-height:1;filter:drop-shadow(0 0 8px rgba(242,215,139,.45))}
+  .item-amt .it-main{flex:1;display:flex;flex-direction:column;align-items:flex-start;line-height:1.2}
+  .item-amt .it-name{font-size:18px;font-weight:800;color:var(--cream)}
+  .item-amt .it-price{font-size:13px;color:var(--muted);font-weight:600}
+  .item-amt .it-vote{font-size:13px;font-weight:800;color:#2a1c00;background:linear-gradient(180deg,#F7E6B0,#E4BC66);border-radius:999px;padding:6px 12px;white-space:nowrap}
+  .who .items{display:block;font-size:14px;line-height:1.3;margin-top:3px;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
   @media (prefers-reduced-motion: reduce){*{animation:none !important}}
 </style>
 </head>
@@ -191,7 +198,7 @@
   <main id="board"></main>
 
   <footer>
-    <button class="admin-link" onclick="openAdmin()">Admin</button>
+    <button class="admin-link" onclick="openAdmin()">จัดการ / ตรวจสลิป (แอดมิน)</button>
   </footer>
 </div>
 
@@ -215,7 +222,7 @@
       <!-- step 2: เลือกยอด -->
       <div class="step" id="step2">
         <div class="steplabel">ขั้นที่ 2</div>
-        <h2 class="stephead">โปรดเลือกยอดเงินที่ต้องการชำระ</h2>
+        <h2 class="stephead">เลือกของขวัญส่งให้คนที่คุณเชียร์</h2>
         <div id="selbar2"></div>
         <div class="amounts" id="amounts"></div>
         <div class="hint" id="rateHint"></div>
@@ -291,7 +298,14 @@ const CONFIG = {
   promptpayType: 'natid',         // 'mobile' = เบอร์มือถือ | 'natid' = เลขบัตรประชาชน
   bahtPerVote: 10,                // 10 บาท = 1 คะแนนโหวต
   amounts: [10, 20, 30, 50, 100], // ยอดให้เลือก
-  adminPin: '212223',               // รหัสเข้าหน้าแอดมิน
+  itemMeta: {                     // ของขวัญจักรวาลตามยอดเงิน
+    10:{emoji:'⭐',name:'ดาว'},
+    20:{emoji:'🌙',name:'พระจันทร์'},
+    30:{emoji:'🚀',name:'ยานอวกาศ'},
+    50:{emoji:'☄️',name:'อุกกาบาต'},
+    100:{emoji:'🌌',name:'กาแล็กซี่'},
+  },
+  adminPin: '2569',               // รหัสเข้าหน้าแอดมิน
 };
 
 /* ผู้เข้าประกวด — ใส่ photo:'https://...' เพื่อใช้รูปจริง (ถ้าเว้นไว้จะสร้างรูปแทน) */
@@ -360,9 +374,11 @@ const DATA = {
   // {scores:{B1:n}, photos:{B1:url}, totalBaht, count}
   async leaderboard(){
     if(API){try{const d=await apiGet({action:'leaderboard'});if(d.ok)return d;}catch(e){console.warn('API leaderboard',e);}}
-    const keys=await store.list('vote:');const scores={};let totalBaht=0,count=0;
-    keys.forEach(k=>{const p=k.split(':');const v=Number(p[3])||0;scores[p[2]]=(scores[p[2]]||0)+v;totalBaht+=v*CONFIG.bahtPerVote;count++;});
-    return {ok:true,scores,photos:{},totalBaht,count};
+    const keys=await store.list('vote:');const scores={};const items={};let totalBaht=0,count=0;
+    keys.forEach(k=>{const p=k.split(':');const cid=p[2];const v=Number(p[3])||0;const amt=v*CONFIG.bahtPerVote;
+      scores[cid]=(scores[cid]||0)+v;totalBaht+=amt;count++;
+      if(!items[cid])items[cid]={};items[cid][amt]=(items[cid][amt]||0)+1;});
+    return {ok:true,scores,items,photos:{},totalBaht,count};
   },
   // รายการสลิปสำหรับแอดมิน
   async rows(){
@@ -410,15 +426,30 @@ function isPlaceholder(){return (''+CONFIG.promptpayId).replace(/[^0-9]/g,'')===
    Leaderboard
    ============================================================ */
 let lastScores={};
-let rowEls={}; let boardBuilt=false; let lastSig='';
+let rowEls={}; let boardBuilt=false; let lastSig=''; let lastItems={};
 function applyPhotos(photos){
   Object.keys(photos||{}).forEach(id=>{if(CMAP[id]&&photos[id])CMAP[id].img=photos[id];});
 }
 async function computeScores(){
   const d=await DATA.leaderboard();
   applyPhotos(d.photos);
+  lastItems=d.items||{};
   const tally={}; CONTESTANTS.forEach(c=>tally[c.id]=c.seed+((d.scores&&d.scores[c.id])||0));
   return tally;
+}
+function itemsKey(obj){return Object.keys(obj||{}).sort((a,b)=>a-b).map(k=>k+'x'+obj[k]).join(',');}
+function itemsToEmoji(counts){
+  counts=counts||{};
+  const order=CONFIG.amounts.slice().sort((a,b)=>a-b);
+  let total=0; order.forEach(a=>total+=(counts[a]||0));
+  if(!total) return '';
+  const compact=total>14, parts=[];
+  order.forEach(a=>{
+    const n=counts[a]||0; if(!n)return;
+    const em=(CONFIG.itemMeta[a]||{}).emoji||'•';
+    parts.push((compact||n>8)?(em+'×'+n):em.repeat(n));
+  });
+  return parts.join(compact?' ':'');
 }
 async function renderBoard(){
   const sc=await computeScores();
@@ -434,7 +465,7 @@ async function renderBoard(){
       div.addEventListener('click',()=>openVote(c.id));
       div.innerHTML=`<img class="photo" src="${c.img}" alt="${c.id}">
         <div class="rankwrap"><span class="rank"></span>
-          <span class="who"><span class="nm">${c.name}</span><span class="code">${c.id}</span></span></div>
+          <span class="who"><span class="nm">${c.name}</span><span class="code">${c.id}</span><span class="items"></span></span></div>
         <div class="score"><div class="n"></div><div class="l">คะแนนโหวต</div></div>`;
       board.appendChild(div);
       rowEls[c.id]=div;
@@ -443,7 +474,7 @@ async function renderBoard(){
   }
 
   // ถ้าไม่มีอะไรเปลี่ยน ก็ไม่ต้องทำอะไร (กันกระพริบ)
-  const sig=ranked.map(c=>c.id+':'+sc[c.id]).join('|');
+  const sig=ranked.map(c=>c.id+':'+sc[c.id]+':'+itemsKey(lastItems[c.id])).join('|');
   if(sig===lastSig){ return; }
   lastSig=sig;
 
@@ -457,6 +488,8 @@ async function renderBoard(){
     rankEl.className='rank'+(rk<=3?' r'+rk:'');
     const imgEl=el.querySelector('.photo');
     if(imgEl.getAttribute('src')!==c.img) imgEl.setAttribute('src',c.img);
+    const itEl=el.querySelector('.items');
+    if(itEl) itEl.textContent=itemsToEmoji(lastItems[c.id]);
     const nEl=el.querySelector('.score .n');
     const v=sc[c.id];
     if(lastScores[c.id]!==undefined && v!==lastScores[c.id]){
@@ -517,10 +550,14 @@ function buildAmounts(){
   const c=CMAP[state.contestantId];
   document.getElementById('selbar2').innerHTML=selbar(c);
   document.getElementById('amounts').innerHTML=CONFIG.amounts.map(a=>{
-    const v=a/CONFIG.bahtPerVote;
-    return `<button class="amt" onclick="pickAmount(${a})">${a} บาท <span class="eq">= ${v} คะแนน</span></button>`;
+    const v=a/CONFIG.bahtPerVote; const m=CONFIG.itemMeta[a]||{emoji:'•',name:''};
+    return `<button class="amt item-amt" onclick="pickAmount(${a})">
+      <span class="it-em">${m.emoji}</span>
+      <span class="it-main"><span class="it-name">${m.name}</span><span class="it-price">${a} บาท</span></span>
+      <span class="it-vote">${v} โหวต</span>
+    </button>`;
   }).join('');
-  document.getElementById('rateHint').textContent=`อัตรา: ${CONFIG.bahtPerVote} บาท = 1 คะแนนโหวต`;
+  document.getElementById('rateHint').textContent='ทุกของขวัญคือพลังดาวให้คนที่คุณเชียร์ ✨';
 }
 function pickAmount(a){state.amount=a;goStep(3);}
 
@@ -595,7 +632,8 @@ async function submitVote(){
     b.disabled=false;b.textContent='ยืนยันการโหวต';
     alert('ส่งข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง');return;
   }
-  document.getElementById('successMsg').textContent=`โหวตให้ ${c.id} (${c.name}) จำนวน ${votes} คะแนน • ขอบคุณที่ร่วมสนับสนุน`;
+  const im=CONFIG.itemMeta[state.amount]||{emoji:'',name:''};
+  document.getElementById('successMsg').textContent=`คุณส่ง ${im.emoji} ${im.name} ให้ ${c.id} ${c.name} = ${votes} โหวต • ขอบคุณที่ร่วมส่องแสง`;
   await renderBoard();
   goStep(5);
   b.disabled=false;b.textContent='ยืนยันการโหวต';
