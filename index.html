@@ -180,6 +180,14 @@
   .item-amt .it-price{font-size:13px;color:var(--muted);font-weight:600}
   .item-amt .it-vote{font-size:13px;font-weight:800;color:#2a1c00;background:linear-gradient(180deg,#F7E6B0,#E4BC66);border-radius:999px;padding:6px 12px;white-space:nowrap}
   .who .items{display:block;font-size:14px;line-height:1.3;margin-top:3px;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  .loading-ov{position:fixed;inset:0;z-index:90;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:rgba(4,4,13,.82);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px)}
+  .loading-ov.show{display:flex}
+  .loader{position:relative;width:76px;height:76px}
+  .loader .ring{width:76px;height:76px;border-radius:50%;border:4px solid rgba(242,215,139,.22);border-top-color:var(--gold);animation:spin .9s linear infinite;box-shadow:0 0 26px rgba(242,215,139,.35)}
+  .loader .lstar{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--gold);font-size:24px;animation:lpulse 1.4s ease-in-out infinite}
+  @keyframes lpulse{0%,100%{opacity:.5;transform:scale(.85)}50%{opacity:1;transform:scale(1.12)}}
+  .ltext{font-family:var(--display);font-size:18px;color:var(--gold)}
+  .lsub{font-size:13px;color:var(--muted);margin-top:-8px}
   @media (prefers-reduced-motion: reduce){*{animation:none !important}}
 </style>
 </head>
@@ -285,6 +293,12 @@
 </div>
 
 <div class="lightbox" id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" alt="สลิปขยาย"></div>
+
+<div class="loading-ov" id="loadingOv">
+  <div class="loader"><div class="ring"></div><div class="lstar">&#10022;</div></div>
+  <div class="ltext">กำลังส่งของขวัญ...</div>
+  <div class="lsub">กรุณารอสักครู่ • อย่าเพิ่งปิดหน้านี้</div>
+</div>
 
 <script>
 /* ============================================================
@@ -624,22 +638,26 @@ function buildConfirm(){
 }
 
 async function submitVote(){
-  const b=document.getElementById('submitBtn');b.disabled=true;b.textContent='กำลังบันทึก...';
+  const b=document.getElementById('submitBtn');b.disabled=true;b.textContent='กำลังส่ง...';
+  showLoading(true);
   const votes=state.amount/CONFIG.bahtPerVote;
   const c=CMAP[state.contestantId];
   try{
     const res=await DATA.vote({contestantId:c.id,contestantName:c.name,amount:state.amount,votes,slip:state.slip});
     if(res&&res.ok===false)throw new Error(res.error||'error');
   }catch(e){
+    showLoading(false);
     b.disabled=false;b.textContent='ยืนยันการโหวต';
     alert('ส่งข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง');return;
   }
+  showLoading(false);
   const im=CONFIG.itemMeta[state.amount]||{emoji:'',name:''};
   document.getElementById('successMsg').textContent=`คุณส่ง ${im.emoji} ${im.name} ให้ ${c.id} ${c.name} = ${votes} โหวต • ขอบคุณที่ร่วมส่องแสง`;
   await renderBoard();
   goStep(5);
   b.disabled=false;b.textContent='ยืนยันการโหวต';
 }
+function showLoading(on){const el=document.getElementById('loadingOv');if(el)el.classList.toggle('show',!!on);}
 
 /* step 4 needs confirm built when shown */
 const _goStep=goStep;
