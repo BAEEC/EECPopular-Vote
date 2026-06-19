@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>BA Grand Shining 2026 — ระบบโหวต</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<style>
+  /* ===== ปรับแต่งหลัก: แก้ค่าตรงนี้ได้เลย ===== */
+  :root{
+    --blue:#2E2FD6; --blue-deep:#16178F; --navy:#0A0A2E; --navy-2:#07071F;
+    --ink:#0a0b3a; --red:#F0263C; --olive:#B7BE2F; --line:rgba(255,255,255,.14);
+    --muted:rgba(255,255,255,.66);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Noto Sans Thai","Sarabun",-apple-system,"Segoe UI",sans-serif;
+    background:#05051a;color:#fff;line-height:1.45;
+    min-height:100vh;display:flex;justify-content:center;
+  }
+  .app{
+    width:100%;max-width:480px;min-height:100vh;position:relative;
+    background:linear-gradient(180deg,var(--blue) 0%,var(--blue-deep) 30%,var(--navy) 70%,var(--navy-2) 100%);
+    box-shadow:0 0 60px rgba(0,0,0,.5);overflow-x:hidden;
+  }
+
+  /* ===== Header ===== */
+  header{
+    position:sticky;top:0;z-index:20;padding:18px 18px 14px;
+    background:linear-gradient(180deg,var(--blue) 0%,rgba(46,47,214,.92) 100%);
+    backdrop-filter:blur(6px);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+    border-bottom:1px solid var(--line);
+  }
+  .title{font-style:italic;font-weight:800;font-size:22px;letter-spacing:.3px;margin:0;text-shadow:0 2px 8px rgba(0,0,0,.25)}
+  .subtitle{font-style:italic;font-weight:800;font-size:16px;margin:2px 0 0;opacity:.96}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-style:normal;font-weight:600;color:#bfe3ff;margin-top:5px;opacity:.9}
+  .dot{width:7px;height:7px;border-radius:50%;background:#46e88a;box-shadow:0 0 0 0 rgba(70,232,138,.6);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(70,232,138,.55)}70%{box-shadow:0 0 0 7px rgba(70,232,138,0)}100%{box-shadow:0 0 0 0 rgba(70,232,138,0)}}
+  .btn-vote-top{
+    background:#fff;color:var(--ink);border:none;border-radius:10px;
+    padding:14px 20px;font-family:inherit;font-weight:800;font-size:15px;cursor:pointer;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);white-space:nowrap;
+  }
+  .btn-vote-top:active{transform:translateY(1px)}
+
+  /* ===== Leaderboard ===== */
+  #board{padding:4px 0 90px}
+  .row{
+    display:grid;grid-template-columns:74px 1fr auto;gap:14px;align-items:center;
+    padding:14px 18px;border-bottom:1px solid var(--line);cursor:pointer;
+    transition:background .15s;position:relative;
+  }
+  .row:active{background:rgba(255,255,255,.06)}
+  .row .photo{width:74px;height:96px;border-radius:8px;object-fit:cover;background:#222;display:block}
+  .rankwrap{display:flex;align-items:baseline;gap:10px;min-width:0}
+  .rank{font-weight:800;font-size:44px;line-height:.9;font-style:italic;letter-spacing:-1px}
+  .who .nm{font-size:13px;color:var(--muted);font-weight:500;margin-bottom:-2px}
+  .who .code{font-size:26px;font-weight:800}
+  .score{text-align:right}
+  .score .n{font-size:40px;font-weight:800;line-height:.95;transition:color .3s}
+  .score .l{font-size:12px;color:var(--muted)}
+  .bump{animation:bump .5s ease}
+  @keyframes bump{0%{color:#ffd54a;transform:scale(1)}40%{transform:scale(1.18)}100%{transform:scale(1)}}
+  .rank.r1{color:#FFD24A}.rank.r2{color:#E6ECFF}.rank.r3{color:#FFB877}
+
+  footer{position:absolute;bottom:0;left:0;right:0;padding:12px 18px 16px;text-align:center;border-top:1px solid var(--line);background:var(--navy-2)}
+  .admin-link{background:none;border:none;color:var(--muted);font-family:inherit;font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+  /* ===== Sheet / Modal ===== */
+  .overlay{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.55);display:none;align-items:flex-end;justify-content:center}
+  .overlay.show{display:flex}
+  .sheet{
+    width:100%;max-width:480px;background:linear-gradient(180deg,#1a1ba6 0%,#101072 100%);
+    border-radius:22px 22px 0 0;max-height:94vh;overflow-y:auto;
+    box-shadow:0 -10px 40px rgba(0,0,0,.5);animation:up .28s ease;
+    border-top:1px solid rgba(255,255,255,.18);
+  }
+  @keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .sheet-head{position:sticky;top:0;display:flex;align-items:center;gap:10px;padding:16px 18px;background:#1a1ba6;border-bottom:1px solid var(--line);z-index:2}
+  .sheet-head .ttl{font-weight:800;font-size:18px;flex:1}
+  .iconbtn{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.14);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .sheet-body{padding:18px}
+  .step{display:none}
+  .step.active{display:block}
+  .steplabel{font-size:13px;color:#bfc6ff;font-weight:600;margin-bottom:4px}
+  .stephead{font-size:20px;font-weight:800;margin:0 0 16px}
+
+  /* contestant picker */
+  .picker{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .pick{background:rgba(255,255,255,.08);border:2px solid transparent;border-radius:12px;padding:8px;text-align:center;cursor:pointer;color:#fff;font-family:inherit}
+  .pick img{width:100%;height:78px;object-fit:cover;border-radius:8px;display:block;margin-bottom:6px}
+  .pick .pc{font-weight:800;font-size:17px}
+  .pick .pn{font-size:11px;color:var(--muted)}
+  .pick.sel{border-color:#fff;background:rgba(255,255,255,.18)}
+
+  /* selected contestant banner */
+  .selbar{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.1);border-radius:12px;padding:10px 12px;margin-bottom:18px}
+  .selbar img{width:46px;height:60px;object-fit:cover;border-radius:7px}
+  .selbar .sc{font-weight:800;font-size:18px}
+  .selbar .sn{font-size:12px;color:var(--muted)}
+
+  /* amount buttons */
+  .amounts{display:flex;flex-direction:column;gap:12px}
+  .amt{background:#1B30E0;border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:10px;padding:18px;font-family:inherit;font-size:22px;font-weight:800;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
+  .amt:active{transform:translateY(1px)}
+  .amt .eq{font-size:13px;font-weight:600;color:#cdd3ff}
+  .hint{font-size:13px;color:var(--muted);text-align:center;margin-top:14px}
+
+  /* QR */
+  .qrcard{background:#fff;border-radius:16px;padding:18px;text-align:center;margin-bottom:14px}
+  .qrcard .qrtop{color:var(--blue-deep);font-weight:800;font-size:15px}
+  .qrcard #qrbox{width:230px;max-width:78%;margin:12px auto}
+  .qrcard #qrbox svg{display:block}
+  .qramt{color:#111;font-weight:800;font-size:24px;margin-top:4px}
+  .qrwarn{background:rgba(255,210,74,.16);border:1px solid rgba(255,210,74,.4);color:#ffe9a8;font-size:12px;border-radius:8px;padding:8px 10px;margin-bottom:14px;text-align:center;display:none}
+  .btn{width:100%;border:none;border-radius:12px;padding:16px;font-family:inherit;font-size:16px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+  .btn:active{transform:translateY(1px)}
+  .btn-save{background:var(--olive);color:#1c1c00;margin-bottom:10px}
+  .btn-next{background:#fff;color:var(--ink)}
+  .btn-red{background:var(--red);color:#fff}
+  .btn-ghost{background:rgba(255,255,255,.12);color:#fff}
+
+  /* slip upload */
+  .field{margin-bottom:16px}
+  .field .lab{font-size:13px;color:#bfc6ff;font-weight:600;margin-bottom:6px}
+  .confirm-amt{background:rgba(255,255,255,.1);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;font-weight:800;font-size:18px}
+  .drop{border:2px dashed rgba(255,255,255,.4);border-radius:14px;padding:26px;text-align:center;cursor:pointer;background:rgba(255,255,255,.05)}
+  .drop .di{font-size:30px;opacity:.8}
+  .drop .dt{font-size:14px;margin-top:6px;color:var(--muted)}
+  .slip-preview{margin-top:12px;border-radius:12px;overflow:hidden;display:none}
+  .slip-preview img{width:100%;display:block}
+  input[type=file]{display:none}
+
+  /* success */
+  .success{text-align:center;padding:24px 8px}
+  .check{width:84px;height:84px;border-radius:50%;background:#2ecc71;margin:8px auto 18px;display:flex;align-items:center;justify-content:center;animation:pop .4s ease}
+  @keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .check svg{width:44px;height:44px}
+  .success h3{font-size:22px;margin:0 0 8px}
+  .success p{color:var(--muted);font-size:14px;margin:0 0 20px}
+
+  /* admin */
+  .admin-body{padding:18px}
+  .pin-in{width:100%;font-family:inherit;font-size:22px;text-align:center;letter-spacing:6px;padding:14px;border-radius:10px;border:1px solid var(--line);background:rgba(0,0,0,.25);color:#fff;margin-bottom:14px}
+  .adm-item{display:grid;grid-template-columns:60px 1fr auto;gap:12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+  .adm-item img{width:60px;height:80px;object-fit:cover;border-radius:6px;cursor:pointer;background:#333}
+  .adm-item .meta .c{font-weight:800;font-size:16px}
+  .adm-item .meta .t{font-size:11px;color:var(--muted)}
+  .adm-item .amt-b{font-weight:800;color:#9fe1cb}
+  .btn-del{background:rgba(240,38,60,.18);border:1px solid rgba(240,38,60,.5);color:#ff9aa6;border-radius:8px;padding:8px 10px;font-family:inherit;font-size:12px;cursor:pointer;margin-top:6px}
+  .empty{text-align:center;color:var(--muted);padding:30px 0;font-size:14px}
+  .tot{background:rgba(255,255,255,.08);border-radius:10px;padding:12px;font-size:13px;margin-bottom:14px}
+  .lightbox{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;padding:20px}
+  .lightbox img{max-width:100%;max-height:90vh;border-radius:8px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div>
+      <h1 class="title">BA Grand Shining 2026</h1>
+      <div class="subtitle">อันดับปัจจุบัน</div>
+      <div class="live"><span class="dot"></span> อัปเดตสด</div>
+    </div>
+    <button class="btn-vote-top" onclick="openVote()">ร่วมโหวต</button>
+  </header>
+
+  <main id="board"></main>
+
+  <footer>
+    <button class="admin-link" onclick="openAdmin()">จัดการ / ตรวจสลิป (แอดมิน)</button>
+  </footer>
+</div>
+
+<!-- ===== Vote Sheet ===== -->
+<div class="overlay" id="sheet-ov">
+  <div class="sheet">
+    <div class="sheet-head">
+      <button class="iconbtn" id="backBtn" onclick="backStep()" style="display:none">←</button>
+      <div class="ttl" id="sheetTitle">ร่วมโหวต</div>
+      <button class="iconbtn" onclick="closeVote()">✕</button>
+    </div>
+    <div class="sheet-body">
+
+      <!-- step 1: เลือกผู้เข้าประกวด -->
+      <div class="step" id="step1">
+        <div class="steplabel">ขั้นที่ 1</div>
+        <h2 class="stephead">เลือกผู้เข้าประกวดที่จะโหวต</h2>
+        <div class="picker" id="picker"></div>
+      </div>
+
+      <!-- step 2: เลือกยอด -->
+      <div class="step" id="step2">
+        <div class="steplabel">ขั้นที่ 2</div>
+        <h2 class="stephead">โปรดเลือกยอดเงินที่ต้องการชำระ</h2>
+        <div id="selbar2"></div>
+        <div class="amounts" id="amounts"></div>
+        <div class="hint" id="rateHint"></div>
+      </div>
+
+      <!-- step 3: QR -->
+      <div class="step" id="step3">
+        <div class="steplabel">ขั้นที่ 3</div>
+        <h2 class="stephead">สแกนจ่ายด้วย QR พร้อมเพย์</h2>
+        <div class="qrwarn" id="qrwarn">นี่คือ QR ตัวอย่าง — ใส่พร้อมเพย์จริงของคุณในไฟล์โค้ด (CONFIG.promptpayId)</div>
+        <div class="qrcard">
+          <div class="qrtop">BA Grand Shining 2026</div>
+          <div id="qrbox"></div>
+          <div class="qramt" id="qramt"></div>
+        </div>
+        <button class="btn btn-save" onclick="saveQR()">⬇ บันทึก QR เป็นรูป</button>
+        <button class="btn btn-next" onclick="goStep(4)">ชำระแล้ว แนบหลักฐาน →</button>
+      </div>
+
+      <!-- step 4: แนบสลิป -->
+      <div class="step" id="step4">
+        <div class="steplabel">ขั้นที่ 4</div>
+        <h2 class="stephead">แนบหลักฐานการชำระเงิน</h2>
+        <div id="selbar4"></div>
+        <div class="confirm-amt"><span>ยอดที่ชำระ</span><span id="confirmAmt"></span></div>
+        <label class="drop" for="slipInput" id="dropArea">
+          <div class="di">🧾</div>
+          <div class="dt">แตะเพื่อถ่ายรูป / เลือกสลิปจากเครื่อง</div>
+        </label>
+        <input type="file" id="slipInput" accept="image/*" onchange="onSlip(event)">
+        <div class="slip-preview" id="slipPrev"><img id="slipImg" alt="สลิป"></div>
+        <div style="height:14px"></div>
+        <button class="btn btn-red" id="submitBtn" onclick="submitVote()" disabled style="opacity:.5">ยืนยันการโหวต</button>
+      </div>
+
+      <!-- step 5: success -->
+      <div class="step" id="step5">
+        <div class="success">
+          <div class="check"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5 5L20 6.5" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h3>บันทึกการโหวตแล้ว</h3>
+          <p id="successMsg"></p>
+          <button class="btn btn-next" onclick="closeVote()">กลับไปดูอันดับ</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ===== Admin ===== -->
+<div class="overlay" id="admin-ov">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="ttl">จัดการ / ตรวจสลิป</div>
+      <button class="iconbtn" onclick="closeAdmin()">✕</button>
+    </div>
+    <div class="admin-body" id="adminBody"></div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="this.style.display='none'"><img id="lightboxImg" alt="สลิปขยาย"></div>
+
+<script>
+/* ============================================================
+   ตั้งค่า — แก้ได้ตรงนี้
+   ============================================================ */
+const CONFIG = {
+  // วาง URL ของ Apps Script Web App ที่ deploy แล้ว (ลงท้ายด้วย /exec)
+  // ถ้าเว้นว่าง '' = ทำงานในเครื่องแบบทดสอบ (ยังไม่ส่งไป Sheet/Drive)
+  apiUrl: '',
+  adminToken: 'ba2569secret',     // ต้องตรงกับ ADMIN_TOKEN ใน Apps Script
+  promptpayId: '1319900428906',   // เลขบัตร ปชช ที่ผูกพร้อมเพย์ (อภิวัฒน์ สอนสมุทร)
+  promptpayType: 'natid',         // 'mobile' = เบอร์มือถือ | 'natid' = เลขบัตรประชาชน
+  bahtPerVote: 10,                // 10 บาท = 1 คะแนนโหวต
+  amounts: [10, 20, 30, 50, 100], // ยอดให้เลือก
+  adminPin: '2569',               // รหัสเข้าหน้าแอดมิน
+};
+
+/* ผู้เข้าประกวด — ใส่ photo:'https://...' เพื่อใช้รูปจริง (ถ้าเว้นไว้จะสร้างรูปแทน) */
+const CONTESTANTS = [
+  {id:'B6', name:'ชื่อ นามสกุล', seed:101, hue:265},
+  {id:'B1', name:'ชื่อ นามสกุล', seed:99,  hue:350},
+  {id:'B3', name:'ชื่อ นามสกุล', seed:98,  hue:40},
+  {id:'B7', name:'ชื่อ นามสกุล', seed:97,  hue:200},
+  {id:'B11',name:'ชื่อ นามสกุล', seed:86,  hue:25},
+  {id:'B2', name:'ชื่อ นามสกุล', seed:70,  hue:210},
+  {id:'B12',name:'ชื่อ นามสกุล', seed:60,  hue:300},
+  {id:'B4', name:'ชื่อ นามสกุล', seed:58,  hue:160},
+  {id:'B5', name:'ชื่อ นามสกุล', seed:52,  hue:120},
+  {id:'B8', name:'ชื่อ นามสกุล', seed:47,  hue:330},
+  {id:'B9', name:'ชื่อ นามสกุล', seed:40,  hue:55},
+  {id:'B10',name:'ชื่อ นามสกุล', seed:33,  hue:190},
+];
+
+/* ============================================================
+   รูปแทน (เมื่อไม่มีรูปจริง)
+   ============================================================ */
+function avatar(c){
+  if(c.photo) return c.photo;
+  const h=c.hue;
+  const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='150' height='195' viewBox='0 0 150 195'>
+    <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>
+      <stop offset='0' stop-color='hsl(${h},65%,55%)'/><stop offset='1' stop-color='hsl(${(h+40)%360},70%,38%)'/>
+    </linearGradient></defs>
+    <rect width='150' height='195' fill='url(#g)'/>
+    <circle cx='75' cy='74' r='34' fill='rgba(255,255,255,.92)'/>
+    <path d='M30 185c0-30 20-48 45-48s45 18 45 48z' fill='rgba(255,255,255,.92)'/>
+    <text x='75' y='160' font-family='sans-serif' font-size='30' font-weight='800' fill='hsl(${h},60%,30%)' text-anchor='middle'>${c.id}</text>
+  </svg>`;
+  return 'data:image/svg+xml,'+encodeURIComponent(svg);
+}
+CONTESTANTS.forEach(c=>c.img=avatar(c));
+const CMAP={}; CONTESTANTS.forEach(c=>CMAP[c.id]=c);
+
+/* ============================================================
+   ที่เก็บข้อมูล (shared storage ของ artifact + สำรองในหน่วยความจำ)
+   key: vote:{id}:{contestantId}:{votes}   value: {amount,slip,ts}
+   ============================================================ */
+const mem={};
+const store={
+  async set(k,v){try{if(window.storage)return await window.storage.set(k,v,true);}catch(e){} mem[k]=v;return{value:v};},
+  async get(k){try{if(window.storage)return await window.storage.get(k,true);}catch(e){} return (k in mem)?{value:mem[k]}:null;},
+  async del(k){try{if(window.storage)return await window.storage.delete(k,true);}catch(e){} delete mem[k];},
+  async list(p){try{if(window.storage){const r=await window.storage.list(p,true);return r&&r.keys?r.keys:[];}}catch(e){} return Object.keys(mem).filter(k=>k.startsWith(p));}
+};
+
+/* ============================================================
+   ชั้นเชื่อมต่อหลังบ้าน (Apps Script) + fallback ในเครื่อง
+   ============================================================ */
+const API = (CONFIG.apiUrl||'').trim();
+async function apiGet(params){
+  const r=await fetch(API+'?'+new URLSearchParams(params).toString());
+  return await r.json();
+}
+async function apiPost(body){
+  // ใช้ text/plain เพื่อไม่ให้เบราว์เซอร์ทำ CORS preflight (Apps Script ไม่รองรับ OPTIONS)
+  const r=await fetch(API,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(body),redirect:'follow'});
+  return await r.json();
+}
+
+const DATA = {
+  // {scores:{B1:n}, photos:{B1:url}, totalBaht, count}
+  async leaderboard(){
+    if(API){try{const d=await apiGet({action:'leaderboard'});if(d.ok)return d;}catch(e){console.warn('API leaderboard',e);}}
+    const keys=await store.list('vote:');const scores={};let totalBaht=0,count=0;
+    keys.forEach(k=>{const p=k.split(':');const v=Number(p[3])||0;scores[p[2]]=(scores[p[2]]||0)+v;totalBaht+=v*CONFIG.bahtPerVote;count++;});
+    return {ok:true,scores,photos:{},totalBaht,count};
+  },
+  // รายการสลิปสำหรับแอดมิน
+  async rows(){
+    if(API){try{const d=await apiGet({action:'list',token:CONFIG.adminToken});if(d.ok)return d.rows;}catch(e){console.warn('API rows',e);}}
+    const keys=await store.list('vote:');const rows=[];
+    for(const k of keys){const p=k.split(':');let d={};try{const r=await store.get(k);d=r?JSON.parse(r.value):{};}catch(e){}
+      rows.push({key:k,time:d.ts||0,contestant:p[2],amount:d.amount||(Number(p[3])*CONFIG.bahtPerVote),votes:Number(p[3])||0,slip:d.slip,slipImg:d.slip,status:'อนุมัติ'});}
+    return rows;
+  },
+  async vote({contestantId,contestantName,amount,votes,slip}){
+    if(API){return await apiPost({action:'vote',contestantId,contestantName,amount,votes,slip});}
+    const id=Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+    await store.set(`vote:${id}:${contestantId}:${votes}`,JSON.stringify({amount,slip,ts:Date.now()}));
+    return {ok:true};
+  },
+  async reject(row){
+    if(API){return await apiPost({action:'reject',token:CONFIG.adminToken,row});}
+    await store.del(row);return {ok:true};
+  },
+  async savePhoto(id,image){
+    if(API){const d=await apiPost({action:'savePhoto',token:CONFIG.adminToken,id,image});return d&&d.url?d.url:image;}
+    await store.set('photo:'+id,image);return image;
+  }
+};
+
+/* ============================================================
+   PromptPay QR payload (มาตรฐาน EMVCo / Thai QR)
+   ============================================================ */
+function crc16(s){let c=0xFFFF;for(let i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(let j=0;j<8;j++){c=(c&0x8000)?((c<<1)^0x1021):(c<<1);c&=0xFFFF;}}return c.toString(16).toUpperCase().padStart(4,'0');}
+function tlv(id,v){return id+String(v.length).padStart(2,'0')+v;}
+function ppPayload(amount){
+  const isMob=CONFIG.promptpayType==='mobile';
+  const id=(''+CONFIG.promptpayId).replace(/[^0-9]/g,'');
+  const target=isMob?('0066'+id.replace(/^0/,'')):id;
+  const merchant=tlv('00','A000000677010111')+tlv(isMob?'01':'02',target);
+  // ลำดับฟิลด์ตามไลบรารีมาตรฐานไทย: 00,01,29,58,53,54,63
+  let p=tlv('00','01')+tlv('01',amount?'12':'11')+tlv('29',merchant)+tlv('58','TH')+tlv('53','764');
+  if(amount)p+=tlv('54',Number(amount).toFixed(2));
+  p+='6304';
+  return p+crc16(p);
+}
+function isPlaceholder(){return (''+CONFIG.promptpayId).replace(/[^0-9]/g,'')==='0812345678';}
+
+/* ============================================================
+   Leaderboard
+   ============================================================ */
+let lastScores={};
+function applyPhotos(photos){
+  Object.keys(photos||{}).forEach(id=>{if(CMAP[id]&&photos[id])CMAP[id].img=photos[id];});
+}
+async function computeScores(){
+  const d=await DATA.leaderboard();
+  applyPhotos(d.photos);
+  const tally={}; CONTESTANTS.forEach(c=>tally[c.id]=c.seed+((d.scores&&d.scores[c.id])||0));
+  return tally;
+}
+async function renderBoard(){
+  const sc=await computeScores();
+  const ranked=[...CONTESTANTS].sort((a,b)=>sc[b.id]-sc[a.id]);
+  const board=document.getElementById('board');
+  board.innerHTML=ranked.map((c,i)=>{
+    const rk=i+1, rc=rk<=3?'r'+rk:'';
+    const bumped=lastScores[c.id]!==undefined&&sc[c.id]!==lastScores[c.id];
+    return `<div class="row" onclick="openVote('${c.id}')">
+      <img class="photo" src="${c.img}" alt="${c.id}">
+      <div class="rankwrap">
+        <span class="rank ${rc}">${rk}</span>
+        <span class="who"><span class="nm">${c.name}</span><span class="code">${c.id}</span></span>
+      </div>
+      <div class="score"><div class="n ${bumped?'bump':''}">${sc[c.id]}</div><div class="l">คะแนนโหวต</div></div>
+    </div>`;
+  }).join('');
+  lastScores=sc;
+}
+
+/* ============================================================
+   Vote flow
+   ============================================================ */
+let state={contestantId:null,amount:null,slip:null};
+let curStep=1;
+
+function openVote(cid){
+  state={contestantId:cid||null,amount:null,slip:null};
+  resetSlipUI();
+  document.getElementById('sheet-ov').classList.add('show');
+  if(cid){buildAmounts();goStep(2);}else{buildPicker();goStep(1);}
+}
+function closeVote(){document.getElementById('sheet-ov').classList.remove('show');renderBoard();}
+
+function goStep(n){
+  curStep=n;
+  document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  document.querySelector('.sheet').scrollTop=0;
+  const titles={1:'ร่วมโหวต',2:'เลือกยอดบริจาค',3:'สแกนจ่ายเงิน',4:'แนบหลักฐาน',5:'สำเร็จ'};
+  document.getElementById('sheetTitle').textContent=titles[n];
+  document.getElementById('backBtn').style.display=(n===2&&!cameFromCard()||n===3||n===4)?'flex':'none';
+  if(n===3)showQR();
+}
+function cameFromCard(){return false;}
+function backStep(){
+  if(curStep===4)goStep(3);
+  else if(curStep===3)goStep(2);
+  else if(curStep===2)goStep(1);
+}
+
+function buildPicker(){
+  document.getElementById('picker').innerHTML=CONTESTANTS.map(c=>
+    `<button class="pick" data-id="${c.id}" onclick="pickContestant('${c.id}')">
+      <img src="${c.img}" alt="${c.id}"><div class="pc">${c.id}</div><div class="pn">${c.name}</div>
+    </button>`).join('');
+}
+function pickContestant(cid){
+  state.contestantId=cid;
+  buildAmounts();
+  goStep(2);
+}
+
+function selbar(c){return `<div class="selbar"><img src="${c.img}" alt=""><div><div class="sc">${c.id}</div><div class="sn">${c.name}</div></div></div>`;}
+function buildAmounts(){
+  const c=CMAP[state.contestantId];
+  document.getElementById('selbar2').innerHTML=selbar(c);
+  document.getElementById('amounts').innerHTML=CONFIG.amounts.map(a=>{
+    const v=a/CONFIG.bahtPerVote;
+    return `<button class="amt" onclick="pickAmount(${a})">${a} บาท <span class="eq">= ${v} คะแนน</span></button>`;
+  }).join('');
+  document.getElementById('rateHint').textContent=`อัตรา: ${CONFIG.bahtPerVote} บาท = 1 คะแนนโหวต`;
+}
+function pickAmount(a){state.amount=a;goStep(3);}
+
+function showQR(){
+  const a=state.amount;
+  document.getElementById('qramt').textContent='ยอด '+a+' บาท';
+  document.getElementById('qrwarn').style.display=isPlaceholder()?'block':'none';
+  const box=document.getElementById('qrbox');box.innerHTML='';
+  try{
+    const qr=qrcode(0,'M');qr.addData(ppPayload(a));qr.make();
+    box.innerHTML=qr.createSvgTag({cellSize:5,margin:2,scalable:true});
+    const svg=box.querySelector('svg');if(svg){svg.removeAttribute('width');svg.removeAttribute('height');svg.style.width='100%';svg.style.height='auto';}
+  }catch(e){box.innerHTML='<div style="color:#900;padding:20px">สร้าง QR ไม่สำเร็จ</div>';}
+}
+function saveQR(){
+  const a=state.amount;
+  try{
+    const qr=qrcode(0,'M');qr.addData(ppPayload(a));qr.make();
+    const count=qr.getModuleCount(),cell=10,margin=4,q=(count+margin*2)*cell;
+    const W=q+60,H=q+150;
+    const cv=document.createElement('canvas');cv.width=W;cv.height=H;
+    const x=cv.getContext('2d');
+    x.fillStyle='#fff';x.fillRect(0,0,W,H);
+    x.fillStyle='#16178F';x.textAlign='center';x.font='bold 24px sans-serif';
+    x.fillText('BA Grand Shining 2026',W/2,42);
+    x.fillStyle='#000';
+    for(let r=0;r<count;r++)for(let col=0;col<count;col++)if(qr.isDark(r,col))x.fillRect(30+(col+margin)*cell,60+(r+margin)*cell,cell,cell);
+    x.fillStyle='#111';x.font='bold 30px sans-serif';
+    x.fillText('ยอด '+a+' บาท',W/2,H-30);
+    const aEl=document.createElement('a');aEl.href=cv.toDataURL('image/png');aEl.download='promptpay_'+a+'.png';aEl.click();
+  }catch(e){alert('บันทึกไม่สำเร็จ');}
+}
+
+function resetSlipUI(){
+  state.slip=null;
+  document.getElementById('slipInput').value='';
+  document.getElementById('slipPrev').style.display='none';
+  const b=document.getElementById('submitBtn');b.disabled=true;b.style.opacity='.5';
+}
+async function onSlip(e){
+  const f=e.target.files[0];if(!f)return;
+  try{
+    const data=await resizeImg(f);
+    state.slip=data;
+    document.getElementById('slipImg').src=data;
+    document.getElementById('slipPrev').style.display='block';
+    const b=document.getElementById('submitBtn');b.disabled=false;b.style.opacity='1';
+  }catch(err){alert('อ่านรูปไม่สำเร็จ');}
+}
+function resizeImg(file,maxW=820,quality=0.62){
+  return new Promise((res,rej)=>{
+    const fr=new FileReader();
+    fr.onload=()=>{const img=new Image();img.onload=()=>{const sc=Math.min(1,maxW/img.width);const w=Math.round(img.width*sc),h=Math.round(img.height*sc);const cv=document.createElement('canvas');cv.width=w;cv.height=h;cv.getContext('2d').drawImage(img,0,0,w,h);res(cv.toDataURL('image/jpeg',quality));};img.onerror=rej;img.src=fr.result;};
+    fr.onerror=rej;fr.readAsDataURL(file);
+  });
+}
+
+function buildConfirm(){
+  const c=CMAP[state.contestantId];
+  document.getElementById('selbar4').innerHTML=selbar(c);
+  document.getElementById('confirmAmt').textContent=state.amount+' บาท';
+}
+
+async function submitVote(){
+  const b=document.getElementById('submitBtn');b.disabled=true;b.textContent='กำลังบันทึก...';
+  const votes=state.amount/CONFIG.bahtPerVote;
+  const c=CMAP[state.contestantId];
+  try{
+    const res=await DATA.vote({contestantId:c.id,contestantName:c.name,amount:state.amount,votes,slip:state.slip});
+    if(res&&res.ok===false)throw new Error(res.error||'error');
+  }catch(e){
+    b.disabled=false;b.textContent='ยืนยันการโหวต';
+    alert('ส่งข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง');return;
+  }
+  document.getElementById('successMsg').textContent=`โหวตให้ ${c.id} (${c.name}) จำนวน ${votes} คะแนน • ขอบคุณที่ร่วมสนับสนุน`;
+  await renderBoard();
+  goStep(5);
+  b.disabled=false;b.textContent='ยืนยันการโหวต';
+}
+
+/* step 4 needs confirm built when shown */
+const _goStep=goStep;
+goStep=function(n){_goStep(n);if(n===4)buildConfirm();};
+
+/* ============================================================
+   Admin
+   ============================================================ */
+function openAdmin(){
+  document.getElementById('admin-ov').classList.add('show');
+  document.getElementById('adminBody').innerHTML=`
+    <div style="text-align:center;margin-bottom:8px">ใส่รหัสแอดมิน</div>
+    <input class="pin-in" id="pinIn" type="password" inputmode="numeric" maxlength="8" placeholder="••••">
+    <button class="btn btn-next" onclick="checkPin()">เข้าสู่ระบบ</button>`;
+  setTimeout(()=>document.getElementById('pinIn').focus(),200);
+}
+function closeAdmin(){document.getElementById('admin-ov').classList.remove('show');}
+function checkPin(){
+  if(document.getElementById('pinIn').value===CONFIG.adminPin)renderAdmin();
+  else{const i=document.getElementById('pinIn');i.value='';i.placeholder='รหัสไม่ถูกต้อง';}
+}
+function renderAdmin(){
+  const body=document.getElementById('adminBody');
+  body.innerHTML=`
+    <h3 style="margin:0 0 4px;font-size:17px">รูปผู้เข้าประกวด</h3>
+    <div style="color:var(--muted);font-size:12px;margin-bottom:12px">แตะ "เปลี่ยนรูป" เพื่ออัปรูปจากเครื่อง รูปจะขึ้นหน้าอันดับทันที</div>
+    <div class="picker" id="photoGrid"></div>
+    <hr style="border:none;border-top:1px solid var(--line);margin:20px 0">
+    <h3 style="margin:0 0 10px;font-size:17px">รายการโหวต / สลิป</h3>
+    <div id="subList"><div class="empty">กำลังโหลด...</div></div>`;
+  renderPhotoGrid();
+  renderSubmissions();
+}
+function renderPhotoGrid(){
+  const g=document.getElementById('photoGrid');
+  if(!g)return;
+  g.innerHTML=CONTESTANTS.map(c=>`
+    <div class="pick" style="cursor:default">
+      <img src="${c.img}" alt="${c.id}">
+      <div class="pc">${c.id}</div>
+      <label class="btn-del" for="ph_${c.id}" style="margin-top:6px;display:inline-block">เปลี่ยนรูป</label>
+      <input type="file" id="ph_${c.id}" accept="image/*" style="display:none" onchange="uploadPhoto('${c.id}',this)">
+    </div>`).join('');
+}
+async function uploadPhoto(id,input){
+  const f=input.files[0];if(!f)return;
+  try{
+    const data=await resizeImg(f,520,0.72);
+    const url=await DATA.savePhoto(id,data);
+    if(CMAP[id])CMAP[id].img=url||data;
+    renderPhotoGrid();
+    renderBoard();
+  }catch(e){alert('อัปรูปไม่สำเร็จ');}
+}
+async function renderSubmissions(){
+  const wrap=document.getElementById('subList');
+  if(!wrap)return;
+  let rows=[];
+  try{rows=await DATA.rows();}catch(e){wrap.innerHTML='<div class="empty">โหลดรายการไม่สำเร็จ</div>';return;}
+  const active=rows.filter(r=>r.status!=='ปฏิเสธ');
+  const totalBaht=active.reduce((s,r)=>s+(Number(r.amount)||0),0);
+  let html=`<div class="tot">รายการที่นับคะแนน: <b>${active.length}</b> • ยอดเงินรวม: <b>${totalBaht.toLocaleString()}</b> บาท<br>
+    <span style="color:var(--muted);font-size:12px">แตะรูปสลิปเพื่อขยาย • "ตัดออก" = ไม่นับคะแนนรายการนั้น</span></div>`;
+  if(rows.length===0){wrap.innerHTML=html+'<div class="empty">ยังไม่มีรายการโหวต</div>';return;}
+  rows.sort((a,b)=>(b.time||0)-(a.time||0));
+  html+=rows.map(r=>{
+    const cid=String(r.contestant||'').split(/[\s(]/)[0];
+    const c=CMAP[cid]||{id:cid,name:''};
+    const t=r.time?new Date(r.time).toLocaleString('th-TH',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+    const img=r.slipImg||r.slip||c.img;
+    const view=r.slipImg||r.slip||'';
+    const ref=(r.row!=null?r.row:r.key);
+    const rejected=r.status==='ปฏิเสธ';
+    const btn=rejected
+      ? `<button class="btn-del" style="color:#9fe1cb;border-color:rgba(46,204,113,.5);background:rgba(46,204,113,.15)" onclick="approveVote('${ref}')">คืนค่า</button>`
+      : `<button class="btn-del" onclick="rejectVote('${ref}')">ตัดออก</button>`;
+    return `<div class="adm-item" style="${rejected?'opacity:.45':''}">
+      <img src="${img}" onclick="zoom('${view}')" alt="สลิป">
+      <div class="meta"><div class="c">${c.id} <span style="font-weight:400;color:var(--muted);font-size:12px">${c.name}</span></div>
+        <div class="t">${t}${rejected?' • ตัดออกแล้ว':''}</div>${btn}</div>
+      <div><div class="amt-b">${r.amount} ฿</div><div style="font-size:11px;color:var(--muted);text-align:right">+${r.votes} คะแนน</div></div>
+    </div>`;
+  }).join('');
+  wrap.innerHTML=html;
+}
+async function rejectVote(ref){
+  if(!confirm('ตัดรายการนี้ออกจากการนับคะแนน?'))return;
+  await DATA.reject(ref);
+  await renderBoard();
+  renderSubmissions();
+}
+async function approveVote(ref){
+  if(API){await apiPost({action:'approve',token:CONFIG.adminToken,row:ref});}
+  await renderBoard();
+  renderSubmissions();
+}
+function zoom(src){if(!src)return;document.getElementById('lightboxImg').src=src;document.getElementById('lightbox').style.display='flex';}
+
+/* ============================================================
+   เริ่มทำงาน + อัปเดตเรียลไทม์
+   ============================================================ */
+async function loadPhotos(){
+  if(API)return; // โหมด API: รูปมากับ leaderboard แล้ว
+  try{
+    const keys=await store.list('photo:');
+    for(const k of keys){
+      const id=k.split(':')[1];
+      if(CMAP[id]){const r=await store.get(k);if(r&&r.value)CMAP[id].img=r.value;}
+    }
+  }catch(e){}
+}
+(async()=>{ await loadPhotos(); renderBoard(); })();
+setInterval(()=>{if(!document.getElementById('sheet-ov').classList.contains('show'))renderBoard();},4000);
+</script>
+</body>
+</html>
