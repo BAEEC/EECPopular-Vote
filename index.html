@@ -81,8 +81,9 @@
   .rank.r1{color:#FCEBB0}.rank.r2{color:#E8ECF2}.rank.r3{color:#F0C089}
   .rank.r1::before{content:'\265B';position:absolute;top:-15px;left:50%;transform:translateX(-50%);font-size:13px;color:var(--gold);text-shadow:0 0 10px var(--gold)}
   .who{min-width:0}
-  .who .nm{font-size:12px;color:var(--muted);margin-bottom:-1px}
-  .who .code{font-size:22px;font-weight:800;color:var(--cream)}
+  .who .line{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.15}
+  .who .nm{font-size:16px;color:var(--cream);font-weight:600}
+  .who .code{font-size:22px;font-weight:800;color:var(--gold)}
   .score{text-align:right}
   .score .n{font-family:var(--display);font-size:30px;font-weight:700;color:var(--gold);line-height:1;transition:color .3s}
   .score .l{font-size:11px;color:var(--muted)}
@@ -310,18 +311,19 @@ const CONFIG = {
 
 /* ผู้เข้าประกวด — ใส่ photo:'https://...' เพื่อใช้รูปจริง (ถ้าเว้นไว้จะสร้างรูปแทน) */
 const CONTESTANTS = [
-  {id:'B6', name:'ชื่อ นามสกุล', seed:0, hue:265},
-  {id:'B1', name:'ชื่อ นามสกุล', seed:0,  hue:350},
-  {id:'B3', name:'ชื่อ นามสกุล', seed:0,  hue:40},
-  {id:'B7', name:'ชื่อ นามสกุล', seed:0,  hue:200},
-  {id:'B11',name:'ชื่อ นามสกุล', seed:0,  hue:25},
-  {id:'B2', name:'ชื่อ นามสกุล', seed:0,  hue:210},
-  {id:'B12',name:'ชื่อ นามสกุล', seed:0,  hue:300},
-  {id:'B4', name:'ชื่อ นามสกุล', seed:0,  hue:160},
-  {id:'B5', name:'ชื่อ นามสกุล', seed:0,  hue:120},
-  {id:'B8', name:'ชื่อ นามสกุล', seed:0,  hue:330},
-  {id:'B9', name:'ชื่อ นามสกุล', seed:0,  hue:55},
-  {id:'B10',name:'ชื่อ นามสกุล', seed:0,  hue:190},
+  {id:'G1', name:'Ice Sirintra',        seed:0, hue:330},
+  {id:'G2', name:'Newyear Narissara',   seed:0, hue:350},
+  {id:'G3', name:'Praewa Aitsadaoon',   seed:0, hue:300},
+  {id:'G4', name:'Na Nichakan',         seed:0, hue:280},
+  {id:'B1', name:'Excel Pathanin',      seed:0, hue:210},
+  {id:'B2', name:'Sup Thaweesup',       seed:0, hue:200},
+  {id:'B3', name:'Jao Poom phucchit',   seed:0, hue:225},
+  {id:'B4', name:'Kongphop Piriyakorn', seed:0, hue:190},
+  {id:'B5', name:'Ryuki Paris',         seed:0, hue:235},
+  {id:'B6', name:'Toon Somphon',        seed:0, hue:250},
+  {id:'L1', name:'Nice Sunicha',        seed:0, hue:150},
+  {id:'L2', name:'PP Peerawat',         seed:0, hue:45},
+  {id:'L3', name:'Tatar Siriprapa',     seed:0, hue:120},
 ];
 
 /* ============================================================
@@ -465,7 +467,7 @@ async function renderBoard(){
       div.addEventListener('click',()=>openVote(c.id));
       div.innerHTML=`<img class="photo" src="${c.img}" alt="${c.id}">
         <div class="rankwrap"><span class="rank"></span>
-          <span class="who"><span class="nm">${c.name}</span><span class="code">${c.id}</span><span class="items"></span></span></div>
+          <span class="who"><span class="line"><span class="code">${c.id}</span> <span class="nm">${c.name}</span></span><span class="items"></span></span></div>
         <div class="score"><div class="n"></div><div class="l">คะแนนโหวต</div></div>`;
       board.appendChild(div);
       rowEls[c.id]=div;
