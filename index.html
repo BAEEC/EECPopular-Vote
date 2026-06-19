@@ -410,6 +410,7 @@ function isPlaceholder(){return (''+CONFIG.promptpayId).replace(/[^0-9]/g,'')===
    Leaderboard
    ============================================================ */
 let lastScores={};
+let rowEls={}; let boardBuilt=false; let lastSig='';
 function applyPhotos(photos){
   Object.keys(photos||{}).forEach(id=>{if(CMAP[id]&&photos[id])CMAP[id].img=photos[id];});
 }
@@ -423,18 +424,48 @@ async function renderBoard(){
   const sc=await computeScores();
   const ranked=[...CONTESTANTS].sort((a,b)=>sc[b.id]-sc[a.id]);
   const board=document.getElementById('board');
-  board.innerHTML=ranked.map((c,i)=>{
-    const rk=i+1, rc=rk<=3?'r'+rk:'';
-    const bumped=lastScores[c.id]!==undefined&&sc[c.id]!==lastScores[c.id];
-    return `<div class="row" onclick="openVote('${c.id}')">
-      <img class="photo" src="${c.img}" alt="${c.id}">
-      <div class="rankwrap">
-        <span class="rank ${rc}">${rk}</span>
-        <span class="who"><span class="nm">${c.name}</span><span class="code">${c.id}</span></span>
-      </div>
-      <div class="score"><div class="n ${bumped?'bump':''}">${sc[c.id]}</div><div class="l">คะแนนโหวต</div></div>
-    </div>`;
-  }).join('');
+
+  // สร้างการ์ดครั้งเดียว
+  if(!boardBuilt){
+    board.innerHTML='';
+    ranked.forEach(c=>{
+      const div=document.createElement('div');
+      div.className='row';
+      div.addEventListener('click',()=>openVote(c.id));
+      div.innerHTML=`<img class="photo" src="${c.img}" alt="${c.id}">
+        <div class="rankwrap"><span class="rank"></span>
+          <span class="who"><span class="nm">${c.name}</span><span class="code">${c.id}</span></span></div>
+        <div class="score"><div class="n"></div><div class="l">คะแนนโหวต</div></div>`;
+      board.appendChild(div);
+      rowEls[c.id]=div;
+    });
+    boardBuilt=true;
+  }
+
+  // ถ้าไม่มีอะไรเปลี่ยน ก็ไม่ต้องทำอะไร (กันกระพริบ)
+  const sig=ranked.map(c=>c.id+':'+sc[c.id]).join('|');
+  if(sig===lastSig){ return; }
+  lastSig=sig;
+
+  // อัปเดตเฉพาะที่เปลี่ยน + เรียงลำดับใหม่โดยย้าย node เดิม (รูปไม่โหลดซ้ำ)
+  ranked.forEach((c,i)=>{
+    const el=rowEls[c.id]; if(!el)return;
+    board.appendChild(el);
+    const rk=i+1;
+    const rankEl=el.querySelector('.rank');
+    rankEl.textContent=rk;
+    rankEl.className='rank'+(rk<=3?' r'+rk:'');
+    const imgEl=el.querySelector('.photo');
+    if(imgEl.getAttribute('src')!==c.img) imgEl.setAttribute('src',c.img);
+    const nEl=el.querySelector('.score .n');
+    const v=sc[c.id];
+    if(lastScores[c.id]!==undefined && v!==lastScores[c.id]){
+      nEl.textContent=v;
+      nEl.classList.remove('bump'); void nEl.offsetWidth; nEl.classList.add('bump');
+    } else {
+      nEl.textContent=v;
+    }
+  });
   lastScores=sc;
 }
 
@@ -620,7 +651,7 @@ async function uploadPhoto(id,input){
     const url=await DATA.savePhoto(id,data);
     if(CMAP[id])CMAP[id].img=url||data;
     renderPhotoGrid();
-    renderBoard();
+    lastSig=''; renderBoard();
   }catch(e){alert('อัปรูปไม่สำเร็จ');}
 }
 async function renderSubmissions(){
@@ -702,7 +733,7 @@ function shoot(){
 buildStars();
 (async()=>{ await loadPhotos(); renderBoard(); })();
 if(!window.matchMedia || !matchMedia('(prefers-reduced-motion: reduce)').matches){ setInterval(shoot, 6500); }
-setInterval(()=>{if(!document.getElementById('sheet-ov').classList.contains('show'))renderBoard();},4000);
+setInterval(()=>{if(!document.getElementById('sheet-ov').classList.contains('show'))renderBoard();},8000);
 </script>
 </body>
 </html>
