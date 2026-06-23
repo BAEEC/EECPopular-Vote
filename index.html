@@ -537,7 +537,7 @@ function goStep(n){
   document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
   document.getElementById('step'+n).classList.add('active');
   document.querySelector('.sheet').scrollTop=0;
-  const titles={1:'ร่วมโหวต',2:'เลือกยอดบริจาค',3:'สแกนจ่ายเงิน',4:'แนบหลักฐาน',5:'สำเร็จ'};
+  const titles={1:'ร่วมโหวต',2:'เลือกของขวัญ',3:'สแกนจ่ายเงิน',4:'แนบหลักฐาน',5:'สำเร็จ'};
   document.getElementById('sheetTitle').textContent=titles[n];
   document.getElementById('backBtn').style.display=(n===2&&!cameFromCard()||n===3||n===4)?'flex':'none';
   if(n===3)showQR();
