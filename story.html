@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>GRAND SHINING 2026 — Story อันดับ 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Noto+Sans+Thai:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#04040d; --space:#0a0a20; --nebula:#1b1147;
+    --gold:#F2D78B; --gold-2:#E4BC66; --gold-line:rgba(242,215,139,.28);
+    --cream:#F4ECD6; --muted:rgba(244,236,214,.62);
+    --display:'Cinzel',serif; --body:'Noto Sans Thai',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:var(--body);color:var(--cream);min-height:100dvh;overflow:hidden;
+    display:flex;justify-content:center;
+    background:
+      radial-gradient(120% 40% at 50% -4%, rgba(242,215,139,.12), transparent 60%),
+      radial-gradient(70% 40% at 10% 22%, rgba(120,78,210,.30), transparent 55%),
+      radial-gradient(70% 40% at 92% 30%, rgba(70,52,165,.26), transparent 55%),
+      linear-gradient(180deg, var(--space) 0%, var(--nebula) 55%, var(--void) 100%);}
+  #stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .star{position:absolute;background:#fff;border-radius:50%;opacity:.6;animation:tw 3s ease-in-out infinite}
+  .star.g{background:var(--gold);box-shadow:0 0 6px var(--gold)}
+  @keyframes tw{0%,100%{opacity:.12;transform:scale(.6)}50%{opacity:1;transform:scale(1)}}
+
+  .frame{position:relative;z-index:1;width:100%;max-width:480px;min-height:100dvh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;padding:5dvh 7vw;gap:1.4dvh}
+
+  .eyebrow{font-family:var(--display);font-size:1.5dvh;letter-spacing:.4vw;color:var(--gold-2);opacity:.9}
+  .title{font-family:var(--display);font-weight:800;font-size:3.4dvh;line-height:1;letter-spacing:.2vw;
+    background:linear-gradient(100deg,#9c7a26,#F7E6B0 25%,#fffaf0 42%,#F2D78B 60%,#9c7a26);
+    background-size:230% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 2px 12px rgba(242,215,139,.4));animation:shine 7s linear infinite}
+  @keyframes shine{to{background-position:230% 0}}
+  .sub{font-size:1.5dvh;color:var(--muted);letter-spacing:.1vw}
+
+  .badge{font-family:var(--display);font-size:1.8dvh;letter-spacing:.3vw;color:var(--gold-2);margin-top:1dvh}
+  .crown{font-size:3dvh;color:var(--gold);text-shadow:0 0 2dvh var(--gold);line-height:1;margin-top:-.4dvh}
+
+  .card{margin-top:.6dvh;padding:.9dvh;border-radius:1.6dvh;border:.3dvh solid var(--gold);
+    background:linear-gradient(180deg, rgba(64,48,16,.4), rgba(22,15,40,.55));
+    box-shadow:0 0 5dvh rgba(242,215,139,.32)}
+  .card img{display:block;height:38dvh;width:auto;max-width:74vw;border-radius:1.1dvh;object-fit:cover}
+
+  .code{font-family:var(--display);font-size:4.6dvh;font-weight:800;color:#FCEBB0;line-height:1;margin-top:.4dvh}
+  .name{font-size:1.9dvh;color:var(--muted)}
+  .score{margin-top:.4dvh}
+  .score .n{font-family:var(--display);font-size:6.4dvh;font-weight:800;color:var(--gold);line-height:1;display:inline-block;
+    filter:drop-shadow(0 0 2dvh rgba(242,215,139,.4))}
+  .score .l{font-size:1.5dvh;color:var(--muted);margin-left:1.5vw}
+  .items{font-size:2.6dvh;letter-spacing:.3vh;line-height:1.3;margin-top:.5dvh}
+
+  .rivals{font-size:1.5dvh;color:var(--muted);margin-top:1dvh;line-height:1.5}
+  .rivals b{color:var(--gold-2);font-weight:700}
+
+  .meta{margin-top:1.6dvh;display:flex;flex-direction:column;gap:.5dvh}
+  .updated{display:inline-flex;align-items:center;gap:.8vw;justify-content:center;font-size:1.6dvh;color:var(--gold-2)}
+  .dot{width:1dvh;height:1dvh;border-radius:50%;background:var(--gold);box-shadow:0 0 1.2dvh var(--gold);animation:pulse 1.8s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(242,215,139,.5)}70%{box-shadow:0 0 0 1.4dvh rgba(242,215,139,0)}100%{box-shadow:0 0 0 0 rgba(242,215,139,0)}}
+  .hype{font-size:1.7dvh;color:var(--cream);font-weight:600}
+  .link{font-size:1.5dvh;color:var(--gold);letter-spacing:.05vw;margin-top:.4dvh}
+
+  @media (prefers-reduced-motion: reduce){*{animation:none !important}}
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div class="frame">
+  <div class="eyebrow">&#10022; GRAND SHINING 2026 • POPULAR VOTE &#10022;</div>
+  <div class="title">อันดับ 1 ล่าสุด</div>
+  <div class="sub">BA Freshy Day &amp; Boom</div>
+
+  <div class="badge">&#9733; ผู้นำอันดับ 1 &#9733;</div>
+  <div class="crown">&#9819;</div>
+  <div class="card"><img id="photo" alt="อันดับ 1"></div>
+  <div class="code" id="code">—</div>
+  <div class="name" id="name"></div>
+  <div class="score"><span class="n" id="score">0</span><span class="l">คะแนนโหวต</span></div>
+  <div class="items" id="items"></div>
+  <div class="rivals" id="rivals"></div>
+
+  <div class="meta">
+    <div class="hype">อันดับอัปเดตทุกวัน • ใครจะคว้าที่ 1? 🌟</div>
+    <div class="updated"><span class="dot"></span> อัปเดตล่าสุด <span id="updated">—</span></div>
+    <div class="link">ร่วมโหวต → baeec.github.io/EECPopular-Vote</div>
+  </div>
+</div>
+
+<script>
+const CONFIG = {
+  apiUrl: 'https://script.google.com/macros/s/AKfycbxMmM15OdA-KsPWIBU3L1nrPf21H2ltZ4Jo9sA93U10U19GLg-4cn7kSkTlqL3HTOhZ/exec',
+  refreshMs: 20000,
+  itemMeta: {10:{emoji:'⭐'},20:{emoji:'🌙'},30:{emoji:'🚀'},50:{emoji:'☄️'},100:{emoji:'🌌'}},
+  amounts:[10,20,30,50,100],
+};
+const CONTESTANTS = [
+  {id:'G1',name:'Ice Sirintra',hue:330},{id:'G2',name:'Newyear Narissara',hue:350},
+  {id:'G3',name:'Praewa Aitsadaoon',hue:300},{id:'G4',name:'Na Nichakan',hue:280},
+  {id:'B1',name:'Excel Pathanin',hue:210},{id:'B2',name:'Sup Thaweesup',hue:200},
+  {id:'B3',name:'Jao Poom phucchit',hue:225},{id:'B4',name:'Kongphop Piriyakorn',hue:190},
+  {id:'B5',name:'Ryuki Paris',hue:235},{id:'B6',name:'Toon Somphon',hue:250},
+  {id:'L1',name:'Nice Sunicha',hue:150},{id:'L2',name:'PP Peerawat',hue:45},
+  {id:'L3',name:'Tatar Siriprapa',hue:120},
+];
+function avatar(c){
+  const h=c.hue||250;
+  const svg=`<svg xmlns='http://www.w3.org/2000/svg' width='240' height='320' viewBox='0 0 240 320'>
+    <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='hsl(${h},65%,55%)'/><stop offset='1' stop-color='hsl(${(h+40)%360},70%,38%)'/></linearGradient></defs>
+    <rect width='240' height='320' fill='url(#g)'/><circle cx='120' cy='120' r='54' fill='rgba(255,255,255,.92)'/>
+    <path d='M48 304c0-50 32-80 72-80s72 30 72 80z' fill='rgba(255,255,255,.92)'/>
+    <text x='120' y='262' font-family='sans-serif' font-size='44' font-weight='800' fill='hsl(${h},60%,30%)' text-anchor='middle'>${c.id}</text></svg>`;
+  return 'data:image/svg+xml,'+encodeURIComponent(svg);
+}
+CONTESTANTS.forEach(c=>c.img=avatar(c));
+const CMAP={}; CONTESTANTS.forEach(c=>CMAP[c.id]=c);
+
+function buildStars(){
+  const sky=document.getElementById('stars');let h='';
+  for(let i=0;i<60;i++){const x=(Math.random()*100).toFixed(2),y=(Math.random()*100).toFixed(2),s=(Math.random()*2+1).toFixed(2),d=(Math.random()*3).toFixed(2),dur=(2+Math.random()*3).toFixed(2);const g=Math.random()<0.25?' g':'';h+=`<span class="star${g}" style="left:${x}%;top:${y}%;width:${s}px;height:${s}px;animation-delay:${d}s;animation-duration:${dur}s"></span>`;}
+  sky.innerHTML=h;
+}
+function itemsCompact(counts){
+  counts=counts||{};const order=CONFIG.amounts.slice().sort((a,b)=>a-b);const parts=[];
+  order.forEach(a=>{const n=counts[a]||0;if(!n)return;const em=(CONFIG.itemMeta[a]||{}).emoji||'\u2022';parts.push(em+'\u00d7'+n);});
+  return parts.join('  ');
+}
+function thaiDT(d){
+  const m=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  const hh=String(d.getHours()).padStart(2,'0'),mm=String(d.getMinutes()).padStart(2,'0');
+  return `${d.getDate()} ${m[d.getMonth()]} ${d.getFullYear()+543} • ${hh}:${mm} น.`;
+}
+
+async function refresh(){
+  let data={scores:{},items:{},photos:{}};
+  try{const r=await fetch(CONFIG.apiUrl+'?action=leaderboard');const d=await r.json();if(d&&d.ok)data=d;}catch(e){ document.getElementById('updated').textContent=thaiDT(new Date())+' (โหลดไม่ได้)'; return; }
+  Object.keys(data.photos||{}).forEach(id=>{if(CMAP[id]&&data.photos[id])CMAP[id].img=data.photos[id];});
+  const sc={};CONTESTANTS.forEach(c=>sc[c.id]=(data.scores&&data.scores[c.id])||0);
+  const ranked=[...CONTESTANTS].sort((a,b)=>sc[b.id]-sc[a.id]);
+  const top=ranked[0];
+
+  const ph=document.getElementById('photo');
+  if(ph.getAttribute('src')!==top.img) ph.setAttribute('src',top.img);
+  document.getElementById('code').textContent=top.id;
+  document.getElementById('name').textContent=top.name;
+  document.getElementById('score').textContent=sc[top.id];
+  document.getElementById('items').textContent=itemsCompact((data.items||{})[top.id]);
+
+  const r2=ranked[1],r3=ranked[2];
+  document.getElementById('rivals').innerHTML = (r2||r3)
+    ? 'ไล่มาติด ๆ&nbsp;&nbsp;'+[r2,r3].filter(Boolean).map((c,i)=>`<b>${i+2} ${c.id}</b> ${c.name} (${sc[c.id]})`).join('&nbsp;&nbsp;·&nbsp;&nbsp;')
+    : '';
+
+  document.getElementById('updated').textContent=thaiDT(new Date());
+}
+
+buildStars(); refresh();
+setInterval(refresh, CONFIG.refreshMs);
+</script>
+</body>
+</html>
